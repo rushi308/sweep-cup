@@ -1,36 +1,87 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# ⚽ SweepCup — FIFA World Cup 2026 Sweepstake
+
+A fun, fully-featured sweepstake draw app for the **FIFA World Cup 2026** (USA · Canada · Mexico). Built with Next.js 16, React 19, TypeScript and Tailwind CSS v4.
+
+---
+
+## Features
+
+- **All 48 teams** across 6 confederations (UEFA, CONMEBOL, CONCACAF, CAF, AFC, OFC) with flag emojis
+- **Flexible team allocation** — each player can receive 1, 2, 3 or a **custom number** (up to 48) of teams
+- **Mixed modes** — different players in the same draw can have different team counts (e.g. 4 players × 12 teams = 48 teams)
+- **Animated draw** — spinning football, cycling team names, and a staggered card reveal
+- **Save & Resume** — progress is auto-saved to `localStorage`; pick up where you left off on next visit
+- **Copy results** — one-tap copy of the full draw summary to clipboard
+- **Mobile-friendly** — responsive layout, works great on phones
+- **SweepCup branding** with gold gradient, dark pitch background and floating football decorations
+
+---
 
 ## Getting Started
 
-First, run the development server:
-
 ```bash
+npm install
 npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+Open [http://localhost:3000](http://localhost:3000) in your browser.
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+### Other commands
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+| Command | Description |
+|---|---|
+| `npm run dev` | Start development server |
+| `npm run build` | Production build |
+| `npm run start` | Start production server |
+| `npm run lint` | Run ESLint |
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+## Project Structure
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```
+app/
+├── types/
+│   └── index.ts          # Shared TypeScript types (Team, Player, Screen, …)
+├── data/
+│   └── teams.ts          # 48 teams + confederation colour maps
+├── lib/
+│   ├── draw.ts           # Sweepstake draw logic (Fisher-Yates shuffle)
+│   ├── storage.ts        # localStorage helpers (load / save / clear)
+│   └── utils.ts          # uid(), mkPlayer(), timeAgo(), shuffle()
+├── components/
+│   ├── NavBar.tsx        # Sticky nav with save indicator & share button
+│   ├── ResumeBanner.tsx  # Resume-saved-session prompt
+│   ├── SetupScreen.tsx   # Player setup, slot picker, draw CTA
+│   ├── DrawingScreen.tsx # Animated draw sequence
+│   ├── ResultsScreen.tsx # Results grid + undrawn teams
+│   ├── PlayerCard.tsx    # Individual result card
+│   ├── TeamBadge.tsx     # Confederation-coloured flag badge
+│   └── SlotPill.tsx      # 1 / 2 / 3 team selector button
+├── page.tsx              # Root page — state orchestration only
+├── layout.tsx            # Root layout + metadata + favicon
+└── globals.css           # Tailwind base + custom animations
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+---
 
-## Deploy on Vercel
+## How it works
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+1. **Set up** — enter player names and choose how many teams each person receives (1–48, can vary per player)
+2. **Draw** — click *Start the Draw!* to randomly assign teams from the shuffled 48-team pool
+3. **Results** — each player's card shows their assigned team(s) with confederation badge and flag
+4. **Share** — copy the results to clipboard and paste into your group chat
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+---
+
+## Tech Stack
+
+- [Next.js 16](https://nextjs.org/) (App Router, Turbopack)
+- [React 19](https://react.dev/)
+- [TypeScript 5](https://www.typescriptlang.org/)
+- [Tailwind CSS v4](https://tailwindcss.com/)
+
+---
+
+Made with ♥ by **Rushi**
+
