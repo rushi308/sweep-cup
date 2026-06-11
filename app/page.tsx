@@ -14,15 +14,22 @@ import { SetupScreen } from "@/app/components/SetupScreen";
 import { DrawingScreen } from "@/app/components/DrawingScreen";
 import { ResultsScreen } from "@/app/components/ResultsScreen";
 
-import { TEAMS } from "@/app/data/teams";
+import { MAX_POT_DRAW_PLAYERS, POT_DRAW_SLOTS, TEAMS } from "@/app/data/teams";
 import { runDraw } from "@/app/lib/draw";
 import { loadState, saveState, clearState } from "@/app/lib/storage";
 import { mkPlayer } from "@/app/lib/utils";
 
-import type { Player, PlayerResult, Screen, Team } from "@/app/types";
+import type {
+  DrawMode,
+  Player,
+  PlayerResult,
+  Screen,
+  Team,
+} from "@/app/types";
 
 export default function Home() {
   const [screen, setScreen] = useState<Screen>("setup");
+  const [drawMode, setDrawMode] = useState<DrawMode>("classic");
   const [defaultSlots, setDefaultSlots] = useState<number>(1);
   const [players, setPlayers] = useState<Player[]>([
     mkPlayer(1),
@@ -43,8 +50,12 @@ export default function Home() {
   const saveTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
 
   const validPlayers = players.filter((p) => p.name.trim().length > 0);
-  const totalSlots = validPlayers.reduce((s, p) => s + p.slots, 0);
-  const overLimit = totalSlots > 48;
+  const potMode = drawMode === "pot";
+  const totalSlots = potMode
+    ? validPlayers.length * POT_DRAW_SLOTS
+    : validPlayers.reduce((s, p) => s + p.slots, 0);
+  const overLimit = !potMode && totalSlots > 48;
+  const overPlayerLimit = potMode && validPlayers.length > MAX_POT_DRAW_PLAYERS;
 
   useEffect(() => {
     const t = setInterval(() => setNowTick((n) => n + 1), 15_000);
@@ -67,13 +78,13 @@ export default function Home() {
     if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     saveTimerRef.current = setTimeout(() => {
       const ts = Date.now();
-      saveState({ players, defaultSlots, savedAt: ts });
+      saveState({ players, defaultSlots, drawMode, savedAt: ts });
       setSession((s) => ({ ...s, savedAt: ts }));
     }, 800);
     return () => {
       if (saveTimerRef.current) clearTimeout(saveTimerRef.current);
     };
-  }, [players, defaultSlots, screen]);
+  }, [players, defaultSlots, drawMode, screen]);
 
   useEffect(
     () => () => {
@@ -88,6 +99,7 @@ export default function Home() {
     if (!saved) return;
     if (saved.players) setPlayers(saved.players);
     if (saved.defaultSlots) setDefaultSlots(saved.defaultSlots);
+    if (saved.drawMode) setDrawMode(saved.drawMode);
     if (saved.results?.length) {
       setResults(saved.results);
       setUnassigned(saved.unassigned ?? []);
@@ -101,7 +113,19 @@ export default function Home() {
     setSession({ savedAt: null, resume: false });
   };
 
-  const addPlayer = () => setPlayers((p) => [...p, mkPlayer(defaultSlots)]);
+  const addPlayer = () =>
+    setPlayers((p) => [
+      ...p,
+      mkPlayer(potMode ? POT_DRAW_SLOTS : defaultSlots),
+    ]);
+
+  const handleSetDrawMode = (mode: DrawMode) => {
+    setDrawMode(mode);
+    if (mode === "pot") {
+      setDefaultSlots(POT_DRAW_SLOTS);
+      setPlayers((p) => p.map((pl) => ({ ...pl, slots: POT_DRAW_SLOTS })));
+    }
+  };
   const removePlayer = (id: string) =>
     setPlayers((p) => (p.length > 1 ? p.filter((pl) => pl.id !== id) : p));
   const updateName = (id: string, name: string) =>
@@ -113,7 +137,8 @@ export default function Home() {
 
   const startDraw = useCallback(() => {
     if (validPlayers.length === 0) return;
-    const { results: r, unassigned: u } = runDraw(validPlayers);
+    if (overLimit || overPlayerLimit) return;
+    const { results: r, unassigned: u } = runDraw(validPlayers, drawMode);
     setResults(r);
     setUnassigned(u);
     setScreen("drawing");
@@ -121,6 +146,7 @@ export default function Home() {
     saveState({
       players,
       defaultSlots,
+      drawMode,
       results: r,
       unassigned: u,
       savedAt: ts,
@@ -137,7 +163,14 @@ export default function Home() {
       if (intervalRef.current) clearInterval(intervalRef.current);
       setScreen("results");
     }, 3200);
-  }, [validPlayers, players, defaultSlots]);
+  }, [
+    validPlayers,
+    players,
+    defaultSlots,
+    drawMode,
+    overLimit,
+    overPlayerLimit,
+  ]);
 
   const reset = () => {
     clearState();
@@ -147,17 +180,27 @@ export default function Home() {
     setUnassigned([]);
     setPlayers([mkPlayer(1), mkPlayer(1), mkPlayer(1)]);
     setDefaultSlots(1);
+    setDrawMode("classic");
   };
 
   const copyResults = () => {
+    const header =
+      drawMode === "pot"
+        ? "⚽ SweepCup — FIFA World Cup 2026 Pot Draw\n(1 team per pot)\n"
+        : "⚽ SweepCup — FIFA World Cup 2026 Draw\n";
     const text = results
-      .map(
-        (r, i) =>
-          `${i + 1}. ${r.player}: ${r.teams.map((t) => `${t.flag} ${t.name}`).join(", ")}`,
-      )
+      .map((r, i) => {
+        if (drawMode === "pot") {
+          const byPot = r.teams
+            .map((t) => `  Pot ${t.pot}: ${t.flag} ${t.name} (#${t.fifaRank})`)
+            .join("\n");
+          return `${i + 1}. ${r.player}:\n${byPot}`;
+        }
+        return `${i + 1}. ${r.player}: ${r.teams.map((t) => `${t.flag} ${t.name}`).join(", ")}`;
+      })
       .join("\n");
     navigator.clipboard
-      .writeText(`⚽ SweepCup — FIFA World Cup 2026 Draw\n\n${text}`)
+      .writeText(`${header}\n${text}`)
       .then(() => {
         setCopied(true);
         setTimeout(() => setCopied(false), 2500);
@@ -293,11 +336,14 @@ export default function Home() {
 
         {screen === "setup" && (
           <SetupScreen
+            drawMode={drawMode}
             defaultSlots={defaultSlots}
             players={players}
             validPlayerCount={validPlayers.length}
             totalSlots={totalSlots}
             overLimit={overLimit}
+            overPlayerLimit={overPlayerLimit}
+            onSetDrawMode={handleSetDrawMode}
             onSetDefaultSlots={setDefaultSlots}
             onApplyDefaultToAll={applyToAll}
             onAddPlayer={addPlayer}
@@ -320,6 +366,7 @@ export default function Home() {
           <ResultsScreen
             results={results}
             unassigned={unassigned}
+            drawMode={drawMode}
             copied={copied}
             onCopyResults={copyResults}
             onReset={reset}

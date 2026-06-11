@@ -2,11 +2,13 @@
 
 import { useState } from "react";
 import { PlayerCard } from "@/app/components/PlayerCard";
-import type { PlayerResult, Team } from "@/app/types";
+import { POTS } from "@/app/data/teams";
+import type { DrawMode, PlayerResult, Team } from "@/app/types";
 
 interface ResultsScreenProps {
   results: PlayerResult[];
   unassigned: Team[];
+  drawMode: DrawMode;
   copied: boolean;
   onCopyResults: () => void;
   onReset: () => void;
@@ -15,10 +17,12 @@ interface ResultsScreenProps {
 export function ResultsScreen({
   results,
   unassigned,
+  drawMode,
   copied,
   onCopyResults,
   onReset,
 }: ResultsScreenProps) {
+  const potMode = drawMode === "pot";
   const [showUndrawn, setShowUndrawn] = useState(false);
   const allTeams = results.flatMap((r) => r.teams);
   const totalDrawn = allTeams.length;
@@ -38,7 +42,8 @@ export function ResultsScreen({
         </h2>
         <p className="text-gray-400 mt-2 text-sm">
           {results.length} player{results.length !== 1 ? "s" : ""} ·{" "}
-          {totalDrawn} teams drawn · May the best team win! ⚽
+          {totalDrawn} teams drawn
+          {potMode ? " (1 per FIFA pot)" : ""} · May the best team win! ⚽
         </p>
 
         {/* Flag strip */}
@@ -87,7 +92,12 @@ export function ResultsScreen({
       {/* ── Player cards grid ───────────────────────────────────────────── */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-6">
         {results.map((result, i) => (
-          <PlayerCard key={i} result={result} index={i} />
+          <PlayerCard
+            key={i}
+            result={result}
+            index={i}
+            drawMode={drawMode}
+          />
         ))}
       </div>
 
@@ -116,19 +126,51 @@ export function ResultsScreen({
           </button>
 
           {showUndrawn && (
-            <div className="mt-3 grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
-              {unassigned.map((team) => (
-                <div
-                  key={team.name}
-                  className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg opacity-35"
-                  style={{ background: "rgba(255,255,255,0.04)" }}
-                >
-                  <span className="text-base leading-none">{team.flag}</span>
-                  <span className="text-gray-500 text-xs truncate">
-                    {team.name}
-                  </span>
-                </div>
-              ))}
+            <div className="mt-3 space-y-3">
+              {potMode
+                ? POTS.map((pot) => {
+                    const potTeams = unassigned.filter((t) => t.pot === pot);
+                    if (potTeams.length === 0) return null;
+                    return (
+                      <div key={pot}>
+                        <h4 className="text-xs font-bold text-gray-600 uppercase tracking-widest mb-1.5">
+                          Pot {pot} ({potTeams.length})
+                        </h4>
+                        <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+                          {potTeams.map((team) => (
+                            <div
+                              key={team.name}
+                              className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg opacity-35"
+                              style={{ background: "rgba(255,255,255,0.04)" }}
+                            >
+                              <span className="text-base leading-none">
+                                {team.flag}
+                              </span>
+                              <span className="text-gray-500 text-xs truncate">
+                                {team.name}
+                              </span>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                : (
+                  <div className="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 gap-1.5">
+                    {unassigned.map((team) => (
+                      <div
+                        key={team.name}
+                        className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg opacity-35"
+                        style={{ background: "rgba(255,255,255,0.04)" }}
+                      >
+                        <span className="text-base leading-none">{team.flag}</span>
+                        <span className="text-gray-500 text-xs truncate">
+                          {team.name}
+                        </span>
+                      </div>
+                    ))}
+                  </div>
+                )}
             </div>
           )}
         </div>

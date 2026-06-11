@@ -1,12 +1,15 @@
 import { TeamBadge } from "@/app/components/TeamBadge";
-import type { PlayerResult } from "@/app/types";
+import type { DrawMode, PlayerResult } from "@/app/types";
 
 interface PlayerCardProps {
   result: PlayerResult;
   index: number;
+  drawMode?: DrawMode;
 }
 
-export function PlayerCard({ result, index }: PlayerCardProps) {
+export function PlayerCard({ result, index, drawMode = "classic" }: PlayerCardProps) {
+  const potMode = drawMode === "pot";
+
   return (
     <div
       className="reveal-card glass-card p-5 flex flex-col gap-3"
@@ -29,7 +32,12 @@ export function PlayerCard({ result, index }: PlayerCardProps) {
 
       <div className="flex flex-col gap-2">
         {result.teams.map((team, ti) => (
-          <TeamBadge key={ti} team={team} />
+          <TeamBadge
+            key={ti}
+            team={team}
+            showPot={potMode}
+            showRank={potMode}
+          />
         ))}
       </div>
     </div>

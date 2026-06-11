@@ -1,61 +1,68 @@
-import type { Team } from "@/app/types";
+import type { Pot, Team } from "@/app/types";
+
+export const POTS: Pot[] = [1, 2, 3, 4];
+export const TEAMS_PER_POT = 12;
+export const MAX_POT_DRAW_PLAYERS = 12;
+export const POT_DRAW_SLOTS = 4;
 
 export const TEAMS: Team[] = [
-  // CONMEBOL
-  { name: "Argentina", flag: "🇦🇷", confederation: "CONMEBOL" },
-  { name: "Brazil", flag: "🇧🇷", confederation: "CONMEBOL" },
-  { name: "Colombia", flag: "🇨🇴", confederation: "CONMEBOL" },
-  { name: "Uruguay", flag: "🇺🇾", confederation: "CONMEBOL" },
-  { name: "Ecuador", flag: "🇪🇨", confederation: "CONMEBOL" },
-  { name: "Paraguay", flag: "🇵🇾", confederation: "CONMEBOL" },
-  // CONCACAF
-  { name: "USA", flag: "🇺🇸", confederation: "CONCACAF" },
-  { name: "Mexico", flag: "🇲🇽", confederation: "CONCACAF" },
-  { name: "Canada", flag: "🇨🇦", confederation: "CONCACAF" },
-  { name: "Panama", flag: "🇵🇦", confederation: "CONCACAF" },
-  { name: "Curaçao", flag: "🇨🇼", confederation: "CONCACAF" },
-  { name: "Haiti", flag: "🇭🇹", confederation: "CONCACAF" },
-  // UEFA
-  { name: "Germany", flag: "🇩🇪", confederation: "UEFA" },
-  { name: "France", flag: "🇫🇷", confederation: "UEFA" },
-  { name: "Spain", flag: "🇪🇸", confederation: "UEFA" },
-  { name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", confederation: "UEFA" },
-  { name: "Portugal", flag: "🇵🇹", confederation: "UEFA" },
-  { name: "Netherlands", flag: "🇳🇱", confederation: "UEFA" },
-  { name: "Belgium", flag: "🇧🇪", confederation: "UEFA" },
-  { name: "Austria", flag: "🇦🇹", confederation: "UEFA" },
-  { name: "Switzerland", flag: "🇨🇭", confederation: "UEFA" },
-  { name: "Croatia", flag: "🇭🇷", confederation: "UEFA" },
-  { name: "Norway", flag: "🇳🇴", confederation: "UEFA" },
-  { name: "Scotland", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", confederation: "UEFA" },
-  { name: "Sweden", flag: "🇸🇪", confederation: "UEFA" },
-  { name: "Türkiye", flag: "🇹🇷", confederation: "UEFA" },
-  { name: "Bosnia and Herzegovina", flag: "🇧🇦", confederation: "UEFA" },
-  { name: "Czechia", flag: "🇨🇿", confederation: "UEFA" },
-  // CAF
-  { name: "Morocco", flag: "🇲🇦", confederation: "CAF" },
-  { name: "Senegal", flag: "🇸🇳", confederation: "CAF" },
-  { name: "Egypt", flag: "🇪🇬", confederation: "CAF" },
-  { name: "Algeria", flag: "🇩🇿", confederation: "CAF" },
-  { name: "South Africa", flag: "🇿🇦", confederation: "CAF" },
-  { name: "Congo DR", flag: "🇨🇩", confederation: "CAF" },
-  { name: "Ghana", flag: "🇬🇭", confederation: "CAF" },
-  { name: "Côte d'Ivoire", flag: "🇨🇮", confederation: "CAF" },
-  { name: "Tunisia", flag: "🇹🇳", confederation: "CAF" },
-  { name: "Cabo Verde", flag: "🇨🇻", confederation: "CAF" },
-  // AFC
-  { name: "Japan", flag: "🇯🇵", confederation: "AFC" },
-  { name: "Korea Republic", flag: "🇰🇷", confederation: "AFC" },
-  { name: "IR Iran", flag: "🇮🇷", confederation: "AFC" },
-  { name: "Australia", flag: "🇦🇺", confederation: "AFC" },
-  { name: "Saudi Arabia", flag: "🇸🇦", confederation: "AFC" },
-  { name: "Uzbekistan", flag: "🇺🇿", confederation: "AFC" },
-  { name: "Jordan", flag: "🇯🇴", confederation: "AFC" },
-  { name: "Iraq", flag: "🇮🇶", confederation: "AFC" },
-  { name: "Qatar", flag: "🇶🇦", confederation: "AFC" },
-  // OFC
-  { name: "New Zealand", flag: "🇳🇿", confederation: "OFC" },
+  // Pot 1 — FIFA ranks 1–12
+  { name: "Argentina", flag: "🇦🇷", confederation: "CONMEBOL", pot: 1, fifaRank: 1 },
+  { name: "Spain", flag: "🇪🇸", confederation: "UEFA", pot: 1, fifaRank: 2 },
+  { name: "France", flag: "🇫🇷", confederation: "UEFA", pot: 1, fifaRank: 3 },
+  { name: "England", flag: "🏴󠁧󠁢󠁥󠁮󠁧󠁿", confederation: "UEFA", pot: 1, fifaRank: 4 },
+  { name: "Portugal", flag: "🇵🇹", confederation: "UEFA", pot: 1, fifaRank: 5 },
+  { name: "Brazil", flag: "🇧🇷", confederation: "CONMEBOL", pot: 1, fifaRank: 6 },
+  { name: "Morocco", flag: "🇲🇦", confederation: "CAF", pot: 1, fifaRank: 7 },
+  { name: "Netherlands", flag: "🇳🇱", confederation: "UEFA", pot: 1, fifaRank: 8 },
+  { name: "Belgium", flag: "🇧🇪", confederation: "UEFA", pot: 1, fifaRank: 9 },
+  { name: "Germany", flag: "🇩🇪", confederation: "UEFA", pot: 1, fifaRank: 10 },
+  { name: "Croatia", flag: "🇭🇷", confederation: "UEFA", pot: 1, fifaRank: 11 },
+  { name: "Colombia", flag: "🇨🇴", confederation: "CONMEBOL", pot: 1, fifaRank: 13 },
+  // Pot 2 — FIFA ranks 13–24
+  { name: "Mexico", flag: "🇲🇽", confederation: "CONCACAF", pot: 2, fifaRank: 14 },
+  { name: "Senegal", flag: "🇸🇳", confederation: "CAF", pot: 2, fifaRank: 15 },
+  { name: "Uruguay", flag: "🇺🇾", confederation: "CONMEBOL", pot: 2, fifaRank: 16 },
+  { name: "USA", flag: "🇺🇸", confederation: "CONCACAF", pot: 2, fifaRank: 17 },
+  { name: "Japan", flag: "🇯🇵", confederation: "AFC", pot: 2, fifaRank: 18 },
+  { name: "Switzerland", flag: "🇨🇭", confederation: "UEFA", pot: 2, fifaRank: 19 },
+  { name: "IR Iran", flag: "🇮🇷", confederation: "AFC", pot: 2, fifaRank: 20 },
+  { name: "Türkiye", flag: "🇹🇷", confederation: "UEFA", pot: 2, fifaRank: 22 },
+  { name: "Ecuador", flag: "🇪🇨", confederation: "CONMEBOL", pot: 2, fifaRank: 23 },
+  { name: "Austria", flag: "🇦🇹", confederation: "UEFA", pot: 2, fifaRank: 24 },
+  { name: "Korea Republic", flag: "🇰🇷", confederation: "AFC", pot: 2, fifaRank: 25 },
+  { name: "Australia", flag: "🇦🇺", confederation: "AFC", pot: 2, fifaRank: 27 },
+  // Pot 3 — FIFA ranks 25–49
+  { name: "Algeria", flag: "🇩🇿", confederation: "CAF", pot: 3, fifaRank: 28 },
+  { name: "Egypt", flag: "🇪🇬", confederation: "CAF", pot: 3, fifaRank: 29 },
+  { name: "Canada", flag: "🇨🇦", confederation: "CONCACAF", pot: 3, fifaRank: 30 },
+  { name: "Norway", flag: "🇳🇴", confederation: "UEFA", pot: 3, fifaRank: 31 },
+  { name: "Côte d'Ivoire", flag: "🇨🇮", confederation: "CAF", pot: 3, fifaRank: 33 },
+  { name: "Panama", flag: "🇵🇦", confederation: "CONCACAF", pot: 3, fifaRank: 34 },
+  { name: "Sweden", flag: "🇸🇪", confederation: "UEFA", pot: 3, fifaRank: 38 },
+  { name: "Czechia", flag: "🇨🇿", confederation: "UEFA", pot: 3, fifaRank: 40 },
+  { name: "Paraguay", flag: "🇵🇾", confederation: "CONMEBOL", pot: 3, fifaRank: 41 },
+  { name: "Scotland", flag: "🏴󠁧󠁢󠁳󠁣󠁴󠁿", confederation: "UEFA", pot: 3, fifaRank: 42 },
+  { name: "Tunisia", flag: "🇹🇳", confederation: "CAF", pot: 3, fifaRank: 45 },
+  { name: "Congo DR", flag: "🇨🇩", confederation: "CAF", pot: 3, fifaRank: 46 },
+  // Pot 4 — FIFA ranks 50–85
+  { name: "Uzbekistan", flag: "🇺🇿", confederation: "AFC", pot: 4, fifaRank: 50 },
+  { name: "Qatar", flag: "🇶🇦", confederation: "AFC", pot: 4, fifaRank: 56 },
+  { name: "Iraq", flag: "🇮🇶", confederation: "AFC", pot: 4, fifaRank: 57 },
+  { name: "South Africa", flag: "🇿🇦", confederation: "CAF", pot: 4, fifaRank: 60 },
+  { name: "Saudi Arabia", flag: "🇸🇦", confederation: "AFC", pot: 4, fifaRank: 61 },
+  { name: "Jordan", flag: "🇯🇴", confederation: "AFC", pot: 4, fifaRank: 63 },
+  { name: "Bosnia and Herzegovina", flag: "🇧🇦", confederation: "UEFA", pot: 4, fifaRank: 64 },
+  { name: "Cabo Verde", flag: "🇨🇻", confederation: "CAF", pot: 4, fifaRank: 67 },
+  { name: "Ghana", flag: "🇬🇭", confederation: "CAF", pot: 4, fifaRank: 73 },
+  { name: "Curaçao", flag: "🇨🇼", confederation: "CONCACAF", pot: 4, fifaRank: 82 },
+  { name: "Haiti", flag: "🇭🇹", confederation: "CONCACAF", pot: 4, fifaRank: 83 },
+  { name: "New Zealand", flag: "🇳🇿", confederation: "OFC", pot: 4, fifaRank: 85 },
 ];
+
+export function getTeamsInPot(pot: Pot): Team[] {
+  return TEAMS.filter((t) => t.pot === pot);
+}
 
 /** Background fill for each confederation's team badge */
 export const CONF_BG: Record<string, string> = {

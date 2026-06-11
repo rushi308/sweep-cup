@@ -1,7 +1,17 @@
 import { CONF_BG, CONF_BORDER, CONF_LABEL } from "@/app/data/teams";
 import type { Team } from "@/app/types";
 
-export function TeamBadge({ team }: { team: Team }) {
+interface TeamBadgeProps {
+  team: Team;
+  showPot?: boolean;
+  showRank?: boolean;
+}
+
+export function TeamBadge({ team, showPot, showRank }: TeamBadgeProps) {
+  const sublabel = showPot
+    ? `Pot ${team.pot}${showRank ? ` · #${team.fifaRank}` : ""}`
+    : team.confederation;
+
   return (
     <div
       className="flex items-center gap-2.5 px-3 py-2 rounded-xl"
@@ -15,8 +25,13 @@ export function TeamBadge({ team }: { team: Team }) {
         <div className="text-white font-semibold text-sm leading-tight truncate">
           {team.name}
         </div>
-        <div className="text-xs mt-0.5" style={{ color: CONF_LABEL[team.confederation] }}>
-          {team.confederation}
+        <div
+          className="text-xs mt-0.5"
+          style={{
+            color: showPot ? "#fde68a" : CONF_LABEL[team.confederation],
+          }}
+        >
+          {sublabel}
         </div>
       </div>
     </div>
